@@ -12,6 +12,10 @@ import reactor.core.publisher.Mono;
 
 import static com.knox.notification.constant.NotificationConstants.*;
 
+/**
+ * Service implementation for sending WhatsApp notifications.
+ * Constructs the WhatsApp request and delegates to NotificationWebClient.
+ */
 @Slf4j
 @Service
 public class WhatsAppSender implements NotificationSender {
@@ -24,11 +28,19 @@ public class WhatsAppSender implements NotificationSender {
         this.whatsAppConfig = whatsAppConfig;
     }
 
+    /**
+     * Sends a WhatsApp notification to the specified recipient.
+     *
+     * @param recipient The phone number of the recipient.
+     * @param content   The content ID used to resolve the WhatsApp template.
+     * @return A Mono containing the NotificationResponse.
+     */
     @Override
     public Mono<NotificationResponse> send(String recipient, String content) {
-        log.info("Preparing to send WhatsApp message to recipient: {} with contentId: {}", recipient, content);
+        log.info("Initiating WhatsApp message send process for recipient: {} with contentId: {}", recipient, content);
+        
         String templateMessage = whatsAppConfig.getTemplateMessage(content);
-        log.debug("Resolved template message: {}", templateMessage);
+        log.debug("Resolved WhatsApp template message name: {}", templateMessage);
 
         WhatsAppRequest request = WhatsAppRequest.builder()
                 .to(recipient)
@@ -40,9 +52,10 @@ public class WhatsAppSender implements NotificationSender {
                         .build())
                 .build();
 
-        log.info("Sending WhatsApp request payload: {}", new Gson().toJson(request));
+        log.info("Constructed WhatsApp request payload: {}", new Gson().toJson(request));
+        
         return notificationWebClient.handlePostRequest(request, NotificationResponse.class)
-                .doOnSuccess(response -> log.info("WhatsApp message sent successfully to {}", recipient))
-                .doOnError(error -> log.error("Failed to send WhatsApp message to {}", recipient, error));
+                .doOnSuccess(response -> log.info("WhatsApp message successfully sent to recipient: {}", recipient))
+                .doOnError(error -> log.error("Failed to send WhatsApp message to recipient: {}", recipient, error));
     }
 }

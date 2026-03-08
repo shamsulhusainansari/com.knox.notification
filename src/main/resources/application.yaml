@@ -21,7 +21,7 @@ springdoc:
 
 email-templates:
   templates:
-    WELCOME:
+    welcome:
       template-id: welcome
       subject-line: Hello World
 

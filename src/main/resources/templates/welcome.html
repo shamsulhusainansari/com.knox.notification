@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome Email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .content {
+            padding: 30px;
+            color: #333333;
+            line-height: 1.6;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 20px;
+            margin-top: 20px;
+            background-color: #4CAF50;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            color: #888888;
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h2>Welcome to Our Community 🎉</h2>
+    </div>
+
+    <div class="content">
+
+        <p>Hi <strong>{{UserName}}</strong>,</p>
+
+        <p>
+            We’re excited to have you on board! Thank you for joining us.
+            Your account has been successfully created, and you're all set to get started.
+        </p>
+
+        <p>
+            Click the button below to explore and begin your journey with us.
+        </p>
+
+        <a href="{{ActionLink}}" class="button">
+            Get Started
+        </a>
+
+        <p>
+            If you have any questions, feel free to reply to this email.
+            We're here to help!
+        </p>
+
+        <p>
+            Best Regards,<br>
+            <strong>Your Company Team</strong>
+        </p>
+
+    </div>
+
+    <div class="footer">
+        © 2026 Your Company. All rights reserved.
+    </div>
+
+</div>
+
+</body>
+</html>

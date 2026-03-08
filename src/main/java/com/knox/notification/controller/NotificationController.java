@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+/**
+ * REST Controller for handling notification requests.
+ * Exposes endpoints to send notifications via supported channels.
+ */
 @Slf4j
 @RestController
 @RequestMapping("/api/v1")
@@ -20,9 +24,17 @@ public class NotificationController {
 
     private final SendMessageHandler handler;
 
+    /**
+     * Endpoint to send a notification.
+     *
+     * @param request The notification request payload containing recipient, channel, and content ID.
+     * @return A Mono containing the NotificationResponse.
+     */
     @PostMapping("/send")
     public Mono<NotificationResponse> send(@RequestBody NotificationRequest request) {
-        log.info("Notification Request: {}", new Gson().toJson(request));
-        return handler.handle(request);
+        log.info("Received notification request: {}", new Gson().toJson(request));
+        return handler.handle(request)
+                .doOnSuccess(response -> log.info("Notification request processed successfully"))
+                .doOnError(error -> log.error("Error processing notification request", error));
     }
 }

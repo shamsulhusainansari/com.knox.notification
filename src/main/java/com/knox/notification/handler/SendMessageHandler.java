@@ -10,6 +10,10 @@ import reactor.core.publisher.Mono;
 import java.util.Arrays;
 import java.util.Optional;
 
+/**
+ * Handler for processing notification requests.
+ * Determines the channel type and delegates to the appropriate sender.
+ */
 @Slf4j
 @Component
 public class SendMessageHandler {
@@ -19,27 +23,35 @@ public class SendMessageHandler {
         this.factory = factory;
     }
 
+    /**
+     * Handles the incoming notification request.
+     * Resolves the channel type from the request and uses the factory to get the sender.
+     * Defaults to WHATSAPP if no channel is specified or if the specified channel is invalid.
+     *
+     * @param request The notification request containing channel, recipient, and content.
+     * @return A Mono containing the NotificationResponse.
+     */
     public Mono<NotificationResponse> handle(NotificationRequest request) {
-        log.info("Handling notification request for recipient: {}", request.getRecipient());
+        log.info("Processing notification request for recipient: {}", request.getRecipient());
 
         ChannelType channelType = Optional.ofNullable(request.getChannel())
                 .map(String::toUpperCase)
                 .flatMap(value -> {
-                    log.debug("Attempting to find ChannelType for value: {}", value);
+                    log.debug("Resolving channel type for value: {}", value);
                     return Arrays.stream(ChannelType.values())
                             .filter(type -> type.name().equals(value))
                             .findFirst();
                 })
                 .orElseGet(() -> {
-                    log.warn("Channel not specified in request, defaulting to WHATSAPP");
+                    log.warn("Channel type not specified or invalid. Defaulting to WHATSAPP.");
                     return ChannelType.WHATSAPP;
                 });
 
-        log.info("Resolved channel type: {} for recipient: {}", channelType, request.getRecipient());
+        log.info("Selected channel: {} for recipient: {}", channelType, request.getRecipient());
 
         return factory.get(channelType)
                 .send(request.getRecipient(), request.getContentId())
-                .doOnSuccess(response -> log.info("Successfully handled notification for recipient: {}", request.getRecipient()))
-                .doOnError(error -> log.error("Error handling notification for recipient: {}", request.getRecipient(), error));
+                .doOnSuccess(response -> log.info("Notification successfully handled for recipient: {}", request.getRecipient()))
+                .doOnError(error -> log.error("Failed to handle notification for recipient: {}", request.getRecipient(), error));
     }
 }

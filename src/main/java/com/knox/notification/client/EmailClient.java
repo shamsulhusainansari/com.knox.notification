@@ -15,6 +15,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.Properties;
 
+/**
+ * Client for sending emails using JavaMail.
+ * Handles SMTP session creation and email transmission.
+ */
 @Slf4j
 @Component
 public class EmailClient {
@@ -27,8 +31,13 @@ public class EmailClient {
         this.session = createSession();
     }
 
+    /**
+     * Creates and configures the JavaMail Session.
+     *
+     * @return The configured Session object.
+     */
     private Session createSession() {
-        log.info("Creating email session with host: {} and port: {}", emailConfig.getHost(), emailConfig.getPort());
+        log.info("Initializing Email Session with host: {} and port: {}", emailConfig.getHost(), emailConfig.getPort());
         Properties props = new Properties();
         props.put("mail.smtp.host", emailConfig.getHost());
         props.put("mail.smtp.port", emailConfig.getPort());
@@ -50,8 +59,15 @@ public class EmailClient {
         });
     }
 
+    /**
+     * Handles the email sending request.
+     * Constructs the MIME message and sends it via Transport.
+     *
+     * @param request The email request containing recipient, subject, and body.
+     * @throws EmailException if an error occurs during sending.
+     */
     public void handleRequest(EmailRequest request) {
-        log.info("Handling email request for recipient: {}", request.getTo());
+        log.info("Processing email request for recipient: {}", request.getTo());
         long start = System.currentTimeMillis();
 
         try {
@@ -71,26 +87,33 @@ public class EmailClient {
 
             message.setContent(multipart);
 
-            log.debug("Sending email message...");
+            log.debug("Dispatching email message via SMTP...");
             Transport.send(message);
 
-            log.info("Email sent successfully to {} in {} ms",
+            log.info("Email successfully sent to {} in {} ms",
                     request.getTo(),
                     System.currentTimeMillis() - start);
 
         } catch (Exception ex) {
-            log.error("Failed to send email to {} after {} ms",
+            log.error("Failed to send email to {} after {} ms. Error: {}",
                     request.getTo(),
                     System.currentTimeMillis() - start,
-                    ex);
+                    ex.getMessage(), ex);
 
             throw new EmailException(ErrorMessageEnum.TECHNICAL_ERROR);
         }
     }
 
+    /**
+     * Validates the email address.
+     *
+     * @param email The email address to validate.
+     * @return The validated email address.
+     * @throws EmailException if the email is blank.
+     */
     private String validate(String email) {
         if (StringUtils.isBlank(email)) {
-            log.error("Email validation failed: Email address is blank");
+            log.error("Email validation failed: Recipient email is blank");
             throw new EmailException(ErrorMessageEnum.TECHNICAL_ERROR);
         }
         return email;
