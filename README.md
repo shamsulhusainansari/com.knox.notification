@@ -1,4 +1,4 @@
-# com.knox.notification
+# Notification Service 
 
 ## Overview
 This project is a notification service designed to handle message delivery across multiple channels, including Email and WhatsApp. It is built using Spring Boot and Project Reactor for reactive, non-blocking I/O operations.
